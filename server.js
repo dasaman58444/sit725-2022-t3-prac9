@@ -5,10 +5,17 @@ var app = express()
 var cors = require ('cors')
 let projectCollection;
 
+//var app = require('express')();
+let http = require('http').createServer(app);
+let io = require('socket.io')(http);
+let socketPort = 8080;
+
+
 app.use(express.static(__dirname+'/public'))
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors())
+
 
 
 app.get('/addTwoNumbers/:firstNumber/:secondNumber', function(req,res,next){
@@ -117,3 +124,23 @@ app.listen(port,()=>{
     createCollection ("vit")
 }
 )
+
+
+//socket test
+io.on("connection", (socket) => {
+    console.log("a user connected");
+    socket.on("disconnect", () => {
+      console.log("user disconnected");
+    });
+    setInterval(() => {
+      socket.emit("number", parseInt(Math.random() * 10));
+    }, 1000);
+  });
+  
+
+  
+  http.listen(socketPort, () => {
+    console.log(`Listening on socketPort ${socketPort}`);
+  });
+
+ 
